@@ -7,12 +7,12 @@
 
 # Imports: #
 
-from tkinter import *
+from tkinter import Tk, PhotoImage, Text, Scrollbar, VERTICAL, RIGHT, Y, Menu, END
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-import idlelib.colorizer as colorizer
-import idlelib.percolator as percolator
-import os
-import re
+from idlelib.colorizer import ColorDelegator, make_pat
+from idlelib.percolator import Percolator
+from os import system, path
+from re import compile, S
 
 # Editor Window: #
 
@@ -37,15 +37,15 @@ textEditor.pack(side = "top", fill = "both", expand = True, padx = 0, pady = 0)
 
 # Text Highlighting: 
 
-highlight = colorizer.ColorDelegator()
-highlight.prog = re.compile(r'\b(P<MYGROUP>tkinter)\b|' + colorizer.make_pat(), re.S)
-highlight.idprog = re.compile(r'\s+(\w+)', re.S)
+highlight = ColorDelegator()
+highlight.prog = compile(r'\b(P<MYGROUP>tkinter)\b|' + make_pat(), S)
+highlight.idprog = compile(r'\s+(\w+)', S)
 
 highlight.tagdefs['COMMENT'] = {'foreground': '#BACBE7', 'background': '#2D3132'}
 highlight.tagdefs['KEYWORD'] = {'foreground': '#5FD66B', 'background': '#2D3132'}
 highlight.tagdefs['BUILTIN'] = {'foreground': '#F29020', 'background': '#2D3132'}
 highlight.tagdefs['STRING'] = {'foreground': '#1E69EB', 'background': '#2D3132'}
-percolator.Percolator(textEditor).insertfilter(highlight)
+Percolator(textEditor).insertfilter(highlight)
 
 # Scroll Bar: 
 
@@ -67,7 +67,7 @@ def runCode():
 	else:
 		saveFile()
 		command = f'start cmd.exe /k python {globalPath}'
-		os.system(command)
+		system(command)
 
 def newFile():
 	global globalPath
@@ -77,43 +77,43 @@ def newFile():
 
 def openFile():
 	global globalPath
-	path = askopenfilename(filetypes = [('Python Files', '*.py')])
-	if(path == ''):
+	filePath = askopenfilename(filetypes = [('Python Files', '*.py')])
+	if(filePath == ''):
 			if(globalPath == ''):
 				window.title("Python Editor: Untitled")
 			else:
-				window.title(f"Python Editor: {os.path.basename(globalPath)}")
+				window.title(f"Python Editor: {path.basename(globalPath)}")
 			return
-	with open(path, 'r') as file:
+	with open(filePath, 'r') as file:
 		text = file.read()
 		textEditor.delete('1.0', END)
 		textEditor.insert('1.0', text)
 		file.close()
-	globalPath = path
-	window.title(f"Python Editor: {os.path.basename(path)}")
+	globalPath = filePath
+	window.title(f"Python Editor: {path.basename(filePath)}")
 
 def saveFile():
 	global globalPath
 	if(globalPath == ''):
-		path = asksaveasfilename(filetypes = [('Python Files', '*.py')])
+		filePath = asksaveasfilename(filetypes = [('Python Files', '*.py')])
 	else:
-		path = globalPath
-		with open(path, 'w') as file:
+		filePath = globalPath
+		with open(filePath, 'w') as file:
 			text = textEditor.get('1.0', END)
 			file.write(text)
-	globalPath = path
-	window.title(f"Python Editor: {os.path.basename(path)}")
+	globalPath = filePath
+	window.title(f"Python Editor: {path.basename(filePath)}")
 
 def saveAsFile():
 	global globalPath
-	path = asksaveasfilename(filetypes = [('Python Files', '*.py')])
-	if(path == ''):
+	filePath = asksaveasfilename(filetypes = [('Python Files', '*.py')])
+	if(filePath == ''):
 		return
-	with open(path, 'w') as file:
+	with open(filePath, 'w') as file:
 		text = textEditor.get('1.0', END)
 		file.write(text)
-	globalPath = path
-	window.title(f"Python Editor: {os.path.basename(path)}")
+	globalPath = filePath
+	window.title(f"Python Editor: {path.basename(filePath)}")
 
 def copyText():
    textEditor.event_generate("<<Copy>>")
