@@ -1,18 +1,16 @@
-# ---------------------------------------------------- #
-#													   #
-#			     Python Code Editor					   #
-#			     Developer: Carbon				       #
-#													   #
-# ---------------------------------------------------- #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#													   				      #
+#			          Python Code Editor					   		#
+#			          Developer: Carbon				       		#
+#													   				      #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 # Imports: #
 
 from tkinter import *
-from tkinter import ttk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 import idlelib.colorizer as colorizer
 import idlelib.percolator as percolator
-import subprocess
 import os
 import re
 
@@ -23,6 +21,9 @@ window.title("Python Editor: Untitled")
 screenWidth = window.winfo_screenwidth()
 screenHeight = window.winfo_screenheight()
 window.geometry(f'{screenWidth // 2}x{screenHeight // 2}')
+window.call('tcl_wordBreakAfter', '', 0) 
+window.call('set', 'tcl_wordchars', '[a-zA-Z0-9_]')
+window.call('set', 'tcl_nonwordchars', '[^a-zA-Z0-9_]')
 
 # Editor Icon: #
 
@@ -31,13 +32,8 @@ window.iconphoto(False, icon)
 
 # Text Editor: #
 
-textEditor = Text(window, font=("Monaco", 15), bg = "#2D3132", fg = "#FFFFFF")
+textEditor = Text(window, font=("Monaco", 15), bg = "#2D3132", fg = "#FFFFFF", undo = True)
 textEditor.pack(side = "top", fill = "both", expand = True, padx = 0, pady = 0)
-
-# Output:
-
-outPut = Text(height = 8)
-outPut.pack(side = "bottom", fill = "both", expand = False, padx = 0, pady = 0)
 
 # Text Highlighting: 
 
@@ -70,32 +66,29 @@ def runCode():
 		saveAsFile()
 	else:
 		saveFile()
-		outPut.delete('1.0', END)
-		command = f'python {globalPath}'
-		process = subprocess.Popen(command, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = True)
-		result, error = process.communicate()
-		if(error):
-			outPut.config(background="white", foreground="red")
-			outPut.insert('1.0', error)
-		else:
-			outPut.config(background="white", foreground="green")
-			outPut.insert('1.0', result)
+		command = f'start cmd.exe /k python {globalPath}'
+		os.system(command)
 
 def newFile():
 	global globalPath
 	textEditor.delete('1.0', END)
 	globalPath = ''
-	window.title(f"Python Editor: Untitled")
+	window.title("Python Editor: Untitled")
 
 def openFile():
 	global globalPath
 	path = askopenfilename(filetypes = [('Python Files', '*.py')])
 	if(path == ''):
+			if(globalPath == ''):
+				window.title("Python Editor: Untitled")
+			else:
+				window.title(f"Python Editor: {os.path.basename(globalPath)}")
 			return
 	with open(path, 'r') as file:
 		text = file.read()
 		textEditor.delete('1.0', END)
 		textEditor.insert('1.0', text)
+		file.close()
 	globalPath = path
 	window.title(f"Python Editor: {os.path.basename(path)}")
 
@@ -108,6 +101,7 @@ def saveFile():
 		with open(path, 'w') as file:
 			text = textEditor.get('1.0', END)
 			file.write(text)
+	globalPath = path
 	window.title(f"Python Editor: {os.path.basename(path)}")
 
 def saveAsFile():
