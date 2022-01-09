@@ -30,9 +30,19 @@ window.call('set', 'tcl_nonwordchars', '[^a-zA-Z0-9_]')
 icon = PhotoImage(file = 'logo.png')
 window.iconphoto(False, icon)
 
+# Editor Variables: #
+
+textColor = '#FFFFFF'
+cursorColor = '#FFFFFF'
+backgroundColor = '#2D3132'
+cmntColor = '#BACBE7'
+keyWordColor = '#5FD66B'
+builtInColor = '#F29020'
+stringColor = '#1E69EB'
+
 # Text Editor: #
 
-textEditor = Text(window, font=("Monaco", 15), bg = "#2D3132", fg = "#FFFFFF", undo = True)
+textEditor = Text(window, font=("Monaco", 15), bg = backgroundColor, fg = textColor, insertbackground = cursorColor, undo = True)
 textEditor.pack(side = "top", fill = "both", expand = True, padx = 0, pady = 0)
 
 # Text Highlighting: 
@@ -41,10 +51,10 @@ highlight = ColorDelegator()
 highlight.prog = compile(r'\b(P<MYGROUP>tkinter)\b|' + make_pat(), S)
 highlight.idprog = compile(r'\s+(\w+)', S)
 
-highlight.tagdefs['COMMENT'] = {'foreground': '#BACBE7', 'background': '#2D3132'}
-highlight.tagdefs['KEYWORD'] = {'foreground': '#5FD66B', 'background': '#2D3132'}
-highlight.tagdefs['BUILTIN'] = {'foreground': '#F29020', 'background': '#2D3132'}
-highlight.tagdefs['STRING'] = {'foreground': '#1E69EB', 'background': '#2D3132'}
+highlight.tagdefs['COMMENT'] = {'foreground': cmntColor, 'background': backgroundColor}
+highlight.tagdefs['KEYWORD'] = {'foreground': keyWordColor, 'background': backgroundColor}
+highlight.tagdefs['BUILTIN'] = {'foreground': builtInColor, 'background': backgroundColor}
+highlight.tagdefs['STRING'] = {'foreground': stringColor, 'background': backgroundColor}
 Percolator(textEditor).insertfilter(highlight)
 
 # Scroll Bar: 
@@ -60,7 +70,7 @@ globalPath = ''
 
 # Editor Functions: #
 
-def runCode():
+def runCode(*event):
 	global globalPath
 	if(globalPath == ''):
 		saveAsFile()
@@ -69,13 +79,13 @@ def runCode():
 		command = f'start cmd.exe /k python {globalPath}'
 		system(command)
 
-def newFile():
+def newFile(*event):
 	global globalPath
 	textEditor.delete('1.0', END)
 	globalPath = ''
 	window.title("Python Editor: Untitled")
 
-def openFile():
+def openFile(*event):
 	global globalPath
 	filePath = askopenfilename(filetypes = [('Python Files', '*.py')])
 	if(filePath == ''):
@@ -92,7 +102,7 @@ def openFile():
 	globalPath = filePath
 	window.title(f"Python Editor: {path.basename(filePath)}")
 
-def saveFile():
+def saveFile(*event):
 	global globalPath
 	if(globalPath == ''):
 		filePath = asksaveasfilename(filetypes = [('Python Files', '*.py')])
@@ -104,7 +114,7 @@ def saveFile():
 	globalPath = filePath
 	window.title(f"Python Editor: {path.basename(filePath)}")
 
-def saveAsFile():
+def saveAsFile(*event):
 	global globalPath
 	filePath = asksaveasfilename(filetypes = [('Python Files', '*.py')])
 	if(filePath == ''):
@@ -115,17 +125,25 @@ def saveAsFile():
 	globalPath = filePath
 	window.title(f"Python Editor: {path.basename(filePath)}")
 
-def copyText():
+def copyText(*event): # Auto-bind
    textEditor.event_generate("<<Copy>>")
 
-def cutText():
+def cutText(*event): # Auto-bind
    textEditor.event_generate("<<Cut>>")
 
-def pasteText():
+def pasteText(*event): # Auto-bind
    textEditor.event_generate("<<Paste>>")
 
-def selectAll():
+def selectAll(*event): # Auto-bind
   	textEditor.tag_add('sel', '1.0', END)
+
+# Keybinds: #
+
+window.bind("<Control-s>", saveFile)
+window.bind("<Control-f>", saveAsFile)
+window.bind("<Control-l>", openFile)
+window.bind("<Control-n>", newFile)
+window.bind("<Control-b>", runCode)
 
 # Menu & Buttons: #
 
