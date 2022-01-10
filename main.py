@@ -63,9 +63,9 @@ globalPath = ''
 def runCode(*event):
 	global globalPath
 	if(globalPath == ''):
-		saveAsFile()
-		command = f'start cmd.exe /k python {globalPath}'
-		system(command)
+		if(saveAsFile()):
+			command = f'start cmd.exe /k python {globalPath}'
+			system(command)
 	else:
 		saveFile()
 		command = f'start cmd.exe /k python {globalPath}'
