@@ -48,7 +48,6 @@ To be able to run Charcoal, you need to have some libraries installed on your co
 2. Install all necessary libraries:
 
     ```sh
-    pip install pygame
     pip install pyqt5
     pip install jedi
     ```
