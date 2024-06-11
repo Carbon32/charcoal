@@ -1,0 +1,16 @@
+{
+  "excluded_folders": 
+  [
+    ".git",
+    "__pycache__"
+  ],
+  
+   "excluded_files": 
+  [
+    ".exe",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".pyc"
+  ]
+}
