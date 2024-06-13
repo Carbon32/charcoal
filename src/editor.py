@@ -20,9 +20,8 @@ class Editor(QsciScintilla):
 		self.is_python_file = is_python_file
 
 		self.setUtf8(True)
-		self.editor_font = QFont("Ebrima")
-		self.editor_font.setPointSize(12)
-		self.setFont(self.editor_font)
+		self.setFont(QFont("Consolas", 12, weight = QFont.Bold))
+		self.linesChanged.connect(self.handle_lines_width)
 
 		self.setBraceMatching(QsciScintilla.SloppyBraceMatch)
 		self.setIndentationGuides(True)
@@ -44,12 +43,14 @@ class Editor(QsciScintilla):
 		self.setEolVisibility(False)
 
 		self.setMarginType(0, QsciScintilla.NumberMargin)
-		self.setMarginWidth(0, "00000")
-		self.setMarginsForegroundColor(QColor("#d3d3d3"))
+		self.setMarginsForegroundColor(QColor("#abb2bf"))
 		self.setMarginsBackgroundColor(QColor("#2E2E2E"))
-		self.setMarginsFont(self.editor_font)
+		self.setMarginsFont(QFont("Consolas", 12, weight = QFont.Bold))
 
 		self.init_lexer()
+
+	def handle_lines_width(self) -> None:
+		self.setMarginWidth(0, f'{self.lines() * 10}')
 
 	def keyPressEvent(self, event: "QKeyEvent") -> None:
 		if(event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Space): self.autoCompleteFromAll()
@@ -61,11 +62,11 @@ class Editor(QsciScintilla):
 	def init_lexer(self):
 		if(self.is_python_file):
 			self.lexer = PythonLexer(self)
-			self.lexer.setDefaultFont(self.editor_font)
+			self.lexer.setDefaultFont(QFont("Consolas", 12, weight = QFont.Bold))
 			self.__api = QsciAPIs(self.lexer)
 			self.auto_complete = AutoComplete(self.path, self.__api)
 			self.setLexer(self.lexer)
 		else:
 			self.setPaper(QColor("#2E2E2E"))
-			self.setColor(QColor("#d3d3d3"))
+			self.setColor(QColor("#abb2bf"))
 

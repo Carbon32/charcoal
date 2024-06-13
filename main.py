@@ -16,21 +16,55 @@ class MainWindow(QMainWindow):
 		self.init_ui()
 		self.current_file, self.current_tab = None, None
 		self.paths = {}
+		self.statusBar().setStyleSheet(
+		'''
+			QStatusBar 
+			{
+				color: #d6d6d6;
+				background-color:  rgb(25, 25, 25);
+			}
+		''')
 
 	def init_ui(self):
 		self.setWindowTitle("Charcoal")
 		self.setWindowIcon(QIcon('res/icons/logo.png'))
 		self.resize(1280, 720)
-		self.setStyleSheet(open("src/qss/style.qss", "r").read())
-		self.font = QFont("Ebrima")
-		self.font.setPointSize(12)
-		self.setFont(self.font)
+		self.setFont(QFont("Ebrima", 12))
 		self.sections = {
 			'File': self.menuBar().addMenu("File"),
 			'Edit': self.menuBar().addMenu("Edit"),
 			'Tools': self.menuBar().addMenu("Tools"),
-			'View': self.menuBar().addMenu("View")
+			'Help': self.menuBar().addMenu("Help")
 		}
+		self.menuBar().setStyleSheet(
+		'''
+			QMenuBar
+			{
+				background-color: rgb(25, 25, 25);
+				color: #d6d6d6;
+			}
+
+			QMenuBar::item
+			{
+				background-color: rgb(25, 25, 25);
+			}
+
+			QMenuBar::item:selected
+			{
+				background-color: rgb(48, 48, 48);
+			}
+
+			QMenu 
+			{
+				background-color: rgb(25, 25, 25);
+				color: #d6d6d6;
+			}
+
+			QMenu::item::selected
+			{
+				background-color: rgb(48, 48, 48);
+			}
+		''')
 		self.frames = {}
 		self.init_menu()
 		self.init_body()
@@ -82,16 +116,16 @@ class MainWindow(QMainWindow):
 		frame.setMidLineWidth(200)
 		frame.setContentsMargins(0, 0, 0, 0)
 		frame.setStyleSheet(
-        '''
-            QFrame 
-            {
-                background-color: rgb(38, 38, 38);
-                border-radius: 0px;
-                border: none;
-                padding: 5px;
-                color: rgb(211, 211, 211);
-            }
-        ''')
+		'''
+			QFrame 
+			{
+				background-color: rgb(38, 38, 38);
+				border-radius: 0px;
+				border: none;
+				padding: 5px;
+				color: rgb(211, 211, 211);
+			}
+		''')
 		self.frames[name] = frame
 		return frame
 
@@ -103,12 +137,25 @@ class MainWindow(QMainWindow):
 
 	def add_side_bar_item(self, path: "str", size: "QSize", action_type: "str"):
 		label = QLabel()
-		label.setPixmap(QPixmap(path).scaled(size))
+		label.setPixmap(QPixmap(path).scaled(size, transformMode=Qt.SmoothTransformation))
 		label.setAlignment(Qt.AlignmentFlag.AlignTop)
-		label.setFont(self.font)
+		label.setFont(QFont("Ebrima", 12))
 		label.mousePressEvent = lambda event: self.handle_side_bar(event, action_type)
 		label.enterEvent = self.set_cursor_pointer
 		label.leaveEvent = self.set_cursor_arrow
+		label.setStyleSheet(
+		'''
+			QFrame
+			{
+				border-radius: 20px;
+				padding: 15px;
+			}
+
+			QFrame:hover
+			{
+				background-color: rgb(48, 48, 48);
+			}
+		''')
 		self.side_bar_layout.addWidget(label)
 
 	def new_file(self) -> None: self.create_new_tab(Path(""), is_new_file = True)
@@ -194,9 +241,7 @@ class MainWindow(QMainWindow):
 				self.save_as()
 				if(self.current_file is None): self.statusBar().showMessage("Save the file first...", 5000)
 			else:
-				if(self.current_file.suffix in {".py", ".pyw"}):
-					self.save_file()
-					# TO BE ADDED
+				if(self.current_file.suffix in {".py", ".pyw"}): self.save_file()
 				else: self.statusBar().showMessage("The file must be a Python file.", 5000)
 
 	def open_src_link(self) -> None: QDesktopServices.openUrl(QUrl("https://github.com/Carbon32/charcoal"))
@@ -211,9 +256,9 @@ class MainWindow(QMainWindow):
 		self.add_menu_option("Edit", "Copy", "Ctrl+C", self.copy)
 		self.add_menu_option("Edit", "Cut", "Ctrl+X", self.cut)
 		self.add_menu_option("Edit", "Paste", "Ctrl+V", self.paste)
-		self.add_menu_option("Edit", "Search", "Ctrl+H", self.force_search, True)
+		self.add_menu_option("Edit", "Search", "Ctrl+F", self.force_search, True)
 		self.add_menu_option("Tools", "Build", "Ctrl+B", self.build)
-		self.add_menu_option("View", "Source Code", "", self.open_src_link)
+		self.add_menu_option("Help", "Source Code", "", self.open_src_link)
 
 	def init_body(self) -> None:
 		self.body_frame = QFrame()
@@ -223,28 +268,147 @@ class MainWindow(QMainWindow):
 		self.body_frame.setMidLineWidth(0)
 		self.body_frame.setContentsMargins(0, 0, 0, 0)
 		self.body_frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		self.body_frame.setStyleSheet(
+		'''
+			QsciScintilla
+			{
+				border: none;
+				background-color: rgb(40, 44, 52);
+				color: rgb(211, 211, 211);
+			}
+			
+			QScrollBar:vertical
+			{
+				border: none;
+				width: 14px;
+				margin: 15px 0 15px 0;
+				background-color: rgb(45, 45, 45);
+				border-radius: 0px;
+			}
+
+			QScrollBar:handle:vertical
+			{
+				background-color: rgb(76, 74, 74);
+			}
+
+			QScrollBar:handle:vertical:pressed
+			{
+				background-color: rgb(92, 91, 91);
+			}
+
+			QScrollBar::sub-line::vertical
+			{
+				border: none;
+				background: none;
+				height: 15px;
+				subcontrol-position: top;
+				subcontrol-origin: margin;
+				background-color: rgb(92, 91, 91);
+			}
+
+			QScrollBar::add-line::vertical
+			{
+				border: none;
+				background: none;
+				height: 15px;
+				subcontrol-position: bottom;
+				subcontrol-origin: margin;
+				background-color: rgb(92, 91, 91);
+			}
+
+			QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+			{
+				background: none;
+			}
+
+			QScrollBar:horizontal
+			{
+				border: none;
+				width: 14px;
+				margin: 15px 0 15px 0;
+				background-color: rgb(45, 45, 45);
+				border-radius: 0px;
+			}
+
+			QScrollBar:handle:horizontal
+			{
+				background-color: rgb(76, 74, 74);
+			}
+
+			QScrollBar:handle:horizontal:pressed
+			{
+				background-color: rgb(92, 91, 91);
+			}
+
+			QScrollBar::sub-line::horizontal
+			{
+				border: none;
+				background: none;
+				height: 15px;
+				border-top-left-radius: 7px;
+				border-top-right-radius: 7px;
+				subcontrol-position: top;
+				subcontrol-origin: margin;
+			}
+
+			QScrollBar::add-line::horizontal
+			{
+				border: none;
+				background: none;
+				height: 15px;
+				border-top-left-radius: 7px;
+				border-top-right-radius: 7px;
+				subcontrol-position: bottom;
+				subcontrol-origin: margin;
+			}
+
+			QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
+			{
+				background: none;
+			}
+		''')
 
 		self.body = QHBoxLayout()
 		self.body.setContentsMargins(0, 0, 0, 0)
 		self.body.setSpacing(0)
-		self.body_frame.setLayout(self.body)
 
 		self.side_bar = QFrame()
 		self.side_bar.setFrameShape(QFrame.StyledPanel)
 		self.side_bar.setFrameShadow(QFrame.Raised)
 		self.side_bar.setContentsMargins(0, 0, 0, 0)
-		self.side_bar.setMaximumWidth(60)
-		self.side_bar.setStyleSheet(f'''background-color: rgb(25, 25, 25); padding: 5px;''')
+		self.side_bar.setMaximumWidth(128)
+		self.side_bar.setStyleSheet(
+		'''
+			background-color: rgb(25, 25, 25);
+			padding: 5px;
+		''')
 		self.side_bar_layout = QVBoxLayout()
 		self.side_bar_layout.setContentsMargins(5, 10, 5, 0)
 		self.side_bar_layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
 
 		self.horizontal_split = QSplitter(Qt.Horizontal)
+		self.horizontal_split.setStyleSheet(
+		'''
+			QSplitter
+			{
+				background-color: rgb(46, 46, 46);
+			}
+
+			QSplitter::handle
+			{
+				background-color: rgb(38, 38, 38);
+			}
+		''')
 
 		self.file_manager_frame = self.add_frame("file_manager")
 		self.file_manager_layout = QVBoxLayout()
 		self.file_manager_layout.setContentsMargins(0, 0, 0, 0)
 		self.file_manager_layout.setSpacing(0)
+		self.file_manager_frame.setStyleSheet(
+		'''
+			background-color: rgb(38, 38, 38);
+			width: 200px;
+		''')
 
 		self.search_frame = self.add_frame("search")
 
@@ -252,42 +416,46 @@ class MainWindow(QMainWindow):
 		self.search_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 		self.search_layout.setContentsMargins(0, 10, 0, 0)
 		self.search_layout.setSpacing(0)
+		self.search_frame.setStyleSheet(
+		'''
+			background-color: rgb(38, 38, 38);
+			width: 200px;
+		''')
 
 		self.search_input = QLineEdit()
 		self.search_input.setPlaceholderText("Search")
-		self.search_input.setFont(self.font)
+		self.search_input.setFont(QFont("Ebrima", 12))
 		self.search_input.setAlignment(Qt.AlignmentFlag.AlignTop)
 		self.search_input.setStyleSheet(
-        '''
-            QLineEdit 
-            {
-                background-color: rgb(38, 38, 38);
-                border-radius: 5px;
-                border: 3px solid rgb(211, 211, 211);
-                padding: 5px;
-                color: rgb(211, 211, 211);
-            }
+		'''
+			QLineEdit 
+			{
+				background-color: rgb(38, 38, 38);
+				border-bottom: 2px solid #999999;
+  				border-radius: 0;
+  				padding-bottom: 10px;
+				margin: 10px;
+				color: rgb(211, 211, 211);
+			}
 
-            QLineEdit:hover
-            {
-                color: rgb(255, 255, 255);
-            }
-        ''')
+			QLineEdit:hover
+			{
+				color: rgb(255, 255, 255);
+			}
+		''')
 
 		self.search_view = QListWidget()
-		self.search_view.setFont(self.font)
+		self.search_view.setFont(QFont("Ebrima", 12))
 		self.search_view.setStyleSheet(
-        '''
-
-            QListWidget 
-            {
-                background-color: rgb(38, 38, 38);
-                border-radius: 5px;
-                padding: 5px;
-                color: rgb(211, 211, 211);
-            }
-
-        ''')
+		'''
+			QListWidget 
+			{
+				background-color: rgb(38, 38, 38);
+				border-radius: 5px;
+				padding: 5px;
+				color: rgb(211, 211, 211);
+			}
+		''')
 		self.search_view.itemClicked.connect(self.open_search_item)
 
 		self.search_layout.addWidget(self.search_input)
@@ -295,16 +463,16 @@ class MainWindow(QMainWindow):
 		self.search_layout.addWidget(self.search_view)
 		self.search_frame.setLayout(self.search_layout)
 
-		self.add_side_bar_item('res/icons/folder.png', QSize(25, 25), "file_manager")
-		self.add_side_bar_item('res/icons/search.png', QSize(25, 25), "search")
-		self.add_side_bar_item('res/icons/build.png', QSize(25, 25), "build")
+		self.add_side_bar_item('res/icons/folder.png', QSize(32, 32), "file_manager")
+		self.add_side_bar_item('res/icons/search.png', QSize(32, 32), "search")
+		self.add_side_bar_item('res/icons/build.png', QSize(32, 32), "build")
 
 		self.model = QFileSystemModel()
 		self.model.setRootPath(os.getcwd())
 		self.model.setFilter(QDir.NoDotAndDotDot | QDir.AllDirs | QDir.Files)
 
 		self.files_tree_view = QTreeView()
-		self.files_tree_view.setFont(QFont("Ebrima", 13))
+		self.files_tree_view.setFont(QFont("Ebrima", 11))
 		self.files_tree_view.setModel(self.model)
 		self.files_tree_view.setRootIndex(self.model.index(os.getcwd()))
 		self.files_tree_view.setSelectionMode(QTreeView.SingleSelection)
@@ -318,6 +486,65 @@ class MainWindow(QMainWindow):
 		self.files_tree_view.setColumnHidden(1, True)
 		self.files_tree_view.setColumnHidden(2, True)
 		self.files_tree_view.setColumnHidden(3, True)
+		self.files_tree_view.setStyleSheet(
+		'''
+			QTreeView
+			{
+				border: none;
+				margin: 10px;
+				outline: 0;
+			}
+
+			QTreeView::item
+			{
+				border: none;
+				margin-left: 10px;
+			}
+
+			QTreeView::item:hover
+			{
+				background-color: rgb(48, 48, 48);
+				color: #d7d7d7;
+			}
+
+			QTreeView::item:focus
+			{
+				background-color: rgb(48, 48, 48);
+			}
+
+			QTreeView::item:selected
+			{
+				background-color: rgb(48, 48, 48);
+			}
+
+			QTreeView::item:active
+			{
+				color: #d7d7d7;
+			}
+
+			QTreeView::item:!active 
+			{
+				background-color: rgb(38, 38, 38);
+				color: #d6d6d6;
+			}
+
+			QTreeView::branch:open:has-children:!has-siblings,
+			QTreeView::branch:open:has-children:has-siblings
+			{
+				border: none;
+				border-image: none;
+				image: url(res/icons/arrow_down.png);
+			}
+
+			QTreeView::branch:has-children:!has-siblings:closed,
+			QTreeView::branch:closed:has-children:has-siblings
+			{
+				background-color: rgb(38, 38, 38);
+				border: none;
+				border-image: none;
+				image: url(res/icons/arrow_right.png);
+			}
+		''')
 
 		self.tab_view = QTabWidget()
 		self.tab_view.setContentsMargins(0, 0, 0, 0)
@@ -326,6 +553,36 @@ class MainWindow(QMainWindow):
 		self.tab_view.setDocumentMode(True)
 		self.tab_view.tabCloseRequested.connect(self.close_tab)
 		self.tab_view.tabBarClicked.connect(self.set_current_tab)
+		self.tab_view.setStyleSheet(
+		'''
+			QTabBar
+			{
+				background-color: rgb(30, 30, 30);
+			}
+
+			QTabBar::tab
+			{
+				background-color: rgb(30, 30, 30);
+				color: rgb(116, 116, 116);
+				min-width: 10ex;
+				min-height: 10ex;
+				padding: 10px 20px;
+				border: none;
+			}
+
+			QTabBar::tab::selected
+			{
+				color: rgb(211, 211, 211);
+				border-style: none;
+				background-color: rgb(46, 46, 46);
+				border-bottom: 2px solid rgb(211, 211, 211);
+			}
+
+			QTabBar::close-button
+			{
+				image: url(res/icons/close.png);
+			}
+		''')
 
 		self.side_bar.setLayout(self.side_bar_layout)
 
@@ -363,13 +620,14 @@ class MainWindow(QMainWindow):
 	def force_search(self) -> None:
 		self.current_side_bar = "search"
 		self.horizontal_split.replaceWidget(0, self.search_frame)
+		self.horizontal_split.setSizes([1, 1])
 		self.frames[self.current_side_bar].show()
 
 	def handle_side_bar(self, event: "QMouseEvent", action_type: "str"):
 		if(self.current_side_bar == action_type):
-			if(self.frames[self.current_side_bar].isHidden()): self.frames[self.current_side_bar].show()
-			else: self.frames[self.current_side_bar].hide()
+			self.frames[self.current_side_bar].show()
 			return
+		self.horizontal_split.setSizes([1, 1])
 		if(action_type == "file_manager"):
 			if(not(self.file_manager_frame in self.horizontal_split.children())):
 				self.horizontal_split.replaceWidget(0, self.file_manager_frame)
@@ -381,6 +639,6 @@ class MainWindow(QMainWindow):
 		elif(action_type == "build"): self.build()
 
 if __name__ == '__main__':
-	application = QApplication([])
+	application = QApplication(sys.argv + ['-platform', 'windows:darkmode=1'])
 	window = MainWindow()
 	sys.exit(application.exec())

@@ -16,18 +16,25 @@ class PythonLexer(QsciLexerCustom):
 		super(PythonLexer, self).__init__(parent)
 		self.setDefaultColor(QColor("#abb2bf"))
 		self.setDefaultPaper(QColor("#2E2E2E"))
-		self.setDefaultFont(QFont("Consolas", 14))
 		self.keywords = keyword.kwlist
 		self.builtin_functions = [name for name, _object in vars(builtins).items() if isinstance(_object, types.BuiltinFunctionType)]
 		self.ids = {
-			"Default": [0, "#abb2bf", "#2E2E2E"], "Keyword": [1, "#c678dd", "#2E2E2E"], "Types": [2, "#56b6c2", "#2E2E2E"], "String": [3, "#98c379", "#2E2E2E"],
-			"Keyargs": [4, "#c678dd", "#2E2E2E"], "Brackets": [5, "#c678dd", "#2E2E2E"], "Comments": [6, "#777777", "#2E2E2E"], "Constants": [7, "#d19a5e", "#2E2E2E"],
-			"Functions": [8, "#61afd1", "#2E2E2E"], "Classes": [9, "#C68F55", "#2E2E2E"], "Define": [10, "#61afd1", "#2E2E2E"]
+			"Default": [0, "#abb2bf", "#2E2E2E"], 
+			"Keyword": [1, "#c678dd", "#2E2E2E"], 
+			"Types": [2, "#56b6c2", "#2E2E2E"], 
+			"String": [3, "#98c379", "#2E2E2E"],
+			"Keyargs": [4, "#c678dd", "#2E2E2E"], 
+			"Brackets": [5, "#c678dd", "#2E2E2E"], 
+			"Comments": [6, "#777777", "#2E2E2E"], 
+			"Constants": [7, "#d19a5e", "#2E2E2E"],
+			"Functions": [8, "#61afd1", "#2E2E2E"], 
+			"Classes": [9, "#C68F55", "#2E2E2E"], 
+			"Define": [10, "#61afd1", "#2E2E2E"]
 		}
 		for item in self.ids:
 			self.setColor(QColor(self.ids[item][1]), self.ids[item][0])
 			self.setPaper(QColor(self.ids[item][2]), self.ids[item][0])
-			if(item == "Default" or item == "Keyword" or item == "Classes" or item == "Define"): self.setFont(QFont("Consolas", 14, weight = QFont.Bold), self.ids[item][0])
+			self.setFont(QFont("Consolas", 12, weight = QFont.Bold), self.ids[item][0])
 
 	def language(self) -> str: return "Python"
 	def description(self, style: "int") -> str: return str([item if style == self.ids[item][0] else "" for item in self.ids])

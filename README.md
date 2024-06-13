@@ -55,9 +55,9 @@ To be able to run Charcoal, you need to have some libraries installed on your co
 ## Contributors:
 
 <a href="https://www.flaticon.com/free-icon/cancel_9324190?term=exit&page=1&position=71&origin=search&related_id=9324190">Close Icon</a><br>
-<a href="https://www.flaticon.com/free-icon/folder_1383970?term=folder&page=1&position=3&origin=search&related_id=138397">Folder Icon</a><br>
-<a href="https://www.flaticon.com/free-icon/search-interface-symbol_54481?term=search&page=1&position=1&origin=search&related_id=54481">Search Icon</a><br>
-<a href="https://www.flaticon.com/free-icon/play-button-arrowhead_27223?term=play&page=1&position=1&origin=search&related_id=27223">Build/Run Icon</a><br>
+<a href="https://www.flaticon.com/free-icon/folder_3735057">Folder Icon</a><br>
+<a href="https://www.flaticon.com/free-icon/search_954591">Search Icon</a><br>
+<a href="https://www.flaticon.com/free-icon/play_7477009">Build/Run Icon</a><br>
 <a href="https://www.flaticon.com/free-icon/charcoal_933265?term=charcoal&page=1&position=1&origin=search&related_id=933265">Charcoal Icon</a><br>
 <a href="https://www.flaticon.com/free-icon/right-arrow_271228?term=right+arrow&page=1&position=1&origin=search&related_id=271228">Arrow Icon</a><br>
 
